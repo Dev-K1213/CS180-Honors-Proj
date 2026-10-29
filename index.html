@@ -1,25 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Python → Java: Negative Transfer Traps</title>
-        <link rel="stylesheet" href ="style.css">
-    </head>
-    <body>
-        <header>
-            <h1>Python → Java: Negative Transfer Traps</h1>
-            <p>Habits that work in Python can silently break in Java.
-                Each Trap shows a runnable pair of examples, why the misconception happens,
-                and the fix.
-            </p>
-        </header>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <div class="layout">
-            <nav><h2>Traps</h2><div id ="nav"></div></nav>
-            <main id ="content"></main>
+    <title>Python → Java: Negative Transfer Traps</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Python runtime for the browser -->
+    <script
+        src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js">
+    </script>
+
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <p class="eyebrow">PYTHON → JAVA FIELD GUIDE</p>
+
+        <h1>Negative Transfer Traps</h1>
+
+        <p class="intro">
+            Habits that work in Python can silently break in Java.
+            Explore common misconceptions, edit the code, and run
+            both examples to see the differences for yourself.
+        </p>
+
+        <div class="runtime-status">
+            <span id="python-status" class="status loading">
+                Initializing Python...
+            </span>
+
+            <span id="java-status" class="status">
+                Java: Judge0 API
+            </span>
         </div>
-        
-        <script src="script.js"></script>
-    </body>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <nav aria-label="Guide navigation">
+                <h2>TRAPS</h2>
+                <div id="nav"></div>
+            </nav>
+
+            <div class="sidebar-note">
+                <strong>Learn by experimenting</strong>
+                <p>
+                    Predict the output, run the code, and then
+                    modify it to test your understanding.
+                </p>
+            </div>
+        </aside>
+
+        <main id="content">
+            <p>Loading field guide...</p>
+        </main>
+    </div>
+
+    <footer>
+        <p>Python → Java Field Guide · Interactive learning edition</p>
+    </footer>
+</body>
 </html>
