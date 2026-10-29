@@ -141,6 +141,139 @@ function showOutput(element, output) {
 
 
 // ============================================================
+// 6. RUN PYTHON CODE
+// ============================================================
+
+// This function takes Python code from an editor, executes it
+// through Pyodide, and displays the result.
+async function runPython(source, outputElement, runButton) {
+
+    if (!pyodide) {
+        showOutput(
+            outputElement,
+            "Python is still loading. Please try again shortly."
+        );
+        return;
+    }
+
+    // Disable the Run button while the program executes.
+    if (runButton) {
+        runButton.disabled = true;
+    }
+
+    // Collect Ouput
+    let output = "";
+
+    try {
+        // Redirect Python's print() output into our JavaScript
+        // variable instead of the browser console.
+        pyodide.setStdout({
+            batched: (text) => {
+                output += text + "\n";
+            }
+        });
+
+        // Execute the student's Python code.
+        const result = await pyodide.runPythonAsync(source);
+
+        if (result !== undefined) {
+            output += String(result);
+        }
+
+        // Display the captured output.
+        showOutput(outputElement, output || "Program finished with no output.");
+
+    } catch (error) {
+        // If the Python code has a syntax error or encounters
+        // another exception, display the error to the student.
+        showOutput(outputElement, "Error: " + error.message);
+
+    } finally {
+        // Re-enable the Run button
+        if (runButton) {
+            runButton.disabled = false;
+        }
+    }
+}
+
+
+// ============================================================
+// 7. RUN JAVA CODE
+// ============================================================
+
+// Java is not being executed
+// directly inside the browser by this function.
+//
+// The code is sent to a remote Java execution service
+// using fetch(). The service compiles and runs the Java code
+// and sends the results back.
+
+async function runJava(source, outputElement, runButton) {
+    // Disable the Run button while Java executes.
+    if (runButton) {
+        runButton.disabled = true;
+    }
+
+    // Show a message while the code is being processed.
+    showOutput(outputElement, "Compiling and running Java...");
+
+    try {
+        // Send the Java code to Judge0's public demo API.
+        const response = await fetch(
+            "https://ce.judge0.com/submissions?base64_encoded=false&wait=true",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    source_code: source,
+                    language_id: 62
+                })
+            }
+        );
+
+        // Convert Judge0's JSON response into a JavaScript object.
+        const result = await response.json();
+
+        // Handle HTTP errors from the execution service.
+        if (!response.ok) {
+            throw new Error(
+                result.message || `Judge0 returned HTTP ${response.status}`
+            );
+        }
+
+
+        const output =
+            result.stdout ||
+            result.compile_output ||
+            result.stderr ||
+            result.message ||
+            result.status?.description ||
+            "Program finished with no output.";
+
+        // Display the result, including compilation or runtime errors.
+        showOutput(outputElement, output);
+
+    } catch (error) {
+        // Handle network errors or problems reaching Judge0.
+        showOutput(
+            outputElement,
+            "Unable to run Java: " + error.message
+        );
+
+    } finally {
+        // re enable Run Button
+        if (runButton) {
+            runButton.disabled = false;
+        }
+    }
+}
+
+
+
+// ============================================================
 // 8. BUILD A CODE EDITOR PANEL
 // ============================================================
 
