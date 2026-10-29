@@ -1,214 +1,380 @@
-//Content
+// ============================================================
+// 1. LESSON DATA
+// ============================================================
+
+// Each object in this array represents one Python-to-Java
+// programming concept that students can learn about.
+//
+// Each lesson can contain information such as:
+// - title: The name of the concept
+// - description: An explanation of the concept
+// - pythonCode: An example written in Python
+// - javaCode: The equivalent example written in Java
+
 const TRAPS = [
+    {
+        title: "Static Typing",
+        description: "Java requires variables to have declared types, while Python is dynamically typed.",
 
-  //Static typing
-  {
-    id: "static-typing",
-    title: "Variables have fixed types",
-    category: "Type system",
-    misconception: "A variable is just a name that can point at anything, like in Python.",
-    python: `x = 5
-x = "five"      # totally fine
+
+        pythonCode: `x = 10
+x = "hello"
 print(x)`,
-    pythonOut: "five",
-    java: `public class Main {
-    public static void main(String[] args) {
-        int x = 5;
-        x = "five";   // compile error: String cannot be converted to int
-        System.out.println(x);
+
+        javaCode: `int x = 10;
+System.out.println(x);`
+    },
+
+    {
+        title: "Integer Division",
+        description: "Python and Java handle division differently when both operands are integers.",
+
+        pythonCode: `print(7 / 2)
+print(7 // 2)`,
+
+        javaCode: `System.out.println(7 / 2);
+System.out.println(7.0 / 2);`
+    },
+
+    {
+        title: "String Equality",
+        description: "Python compares string contents with ==. In Java, use .equals() to compare string contents.",
+
+        pythonCode: `a = "hello"
+b = "hello"
+print(a == b)`,
+
+        javaCode: `String a = "hello";
+String b = "hello";
+
+System.out.println(a.equals(b));`
+    },
+
+    {
+        title: "Arrays and ArrayLists",
+        description: "Java arrays have a fixed length, while ArrayList allows the collection to grow.",
+
+        pythonCode: `numbers = [1, 2, 3]
+numbers.append(4)
+print(numbers)`,
+
+        javaCode: `import java.util.ArrayList;
+
+ArrayList<Integer> numbers = new ArrayList<>();
+numbers.add(1);
+numbers.add(2);
+numbers.add(3);
+numbers.add(4);
+
+System.out.println(numbers);`
+    },
+
+    {
+        title: "Integer Overflow",
+        description: "Java integer types have fixed ranges, so an integer can overflow. Python integers can grow much larger.",
+
+        pythonCode: `x = 2147483647
+print(x + 1)`,
+
+        javaCode: `int x = 2147483647;
+System.out.println(x + 1);`
     }
-}`,
-    javaOut: "error: incompatible types: String cannot be converted to int",
-    why: "Python types belong to values and are checked at runtime. Java types belong to variables and are checked at compile time, so the code never even runs.",
-    fix: "Declare the type once and keep each variable to one purpose. Use a second variable (e.g. int count, String label) instead of reusing one name for different types."
-  },
-
-  //Integer Division
-  {
-    id: "integer-division",
-    title: "/ on integers truncates",
-    category: "Operators",
-    misconception: "Dividing two numbers always gives the exact answer.",
-    python: `print(7 / 2)    # 3.5
-print(7 // 2)   # 3`,
-    pythonOut: "3.5\n3",
-    java: `public class Main {
-    public static void main(String[] args) {
-        System.out.println(7 / 2);      // 3
-        System.out.println(7 / 2.0);    // 3.5
-        System.out.println((double) 7 / 2); // 3.5
-    }
-}`,
-    javaOut: "3\n3.5\n3.5",
-    why: "In Python 3, / is always true division. In Java, the operand types decide: int / int gives an int and drops the remainder.",
-    fix: "Make at least one operand a double (7 / 2.0) or cast before dividing ((double) a / b). Cast the operand, not the result: (double)(a / b) is already truncated."
-  },
-
-  //String equality
-  {
-    id: "string-equality",
-    title: "== does not compare String contents",
-    category: "Objects",
-    misconception: "== checks whether two strings have the same text.",
-    python: `a = "hello"
-b = "".join(["hel", "lo"])
-print(a == b)   # True`,
-    pythonOut: "True",
-    java: `public class Main {
-    public static void main(String[] args) {
-        String a = "hello";
-        String b = new String("hello");
-        System.out.println(a == b);       // false (different objects)
-        System.out.println(a.equals(b));  // true
-    }
-}`,
-    javaOut: "false\ntrue",
-    why: "In Java, == on objects compares references (are these the same object in memory?). Python's == calls __eq__ and compares values; Python's is is the closer match to Java's ==.",
-    fix: "Always use .equals() for Strings and other objects. Write \"literal\".equals(x) to avoid a NullPointerException when x might be null."
-  },
-
-  //fixed arrays
-  {
-    id: "fixed-arrays",
-    title: "Arrays have a fixed size",
-    category: "Collections",
-    misconception: "An array can grow with append, like a Python list.",
-    python: `nums = [1, 2, 3]
-nums.append(4)
-print(nums)     # [1, 2, 3, 4]`,
-    pythonOut: "[1, 2, 3, 4]",
-    java: `import java.util.ArrayList;
-
-public class Main {
-    public static void main(String[] args) {
-        int[] arr = new int[3];       // size is fixed forever
-        // arr[3] = 4;                // ArrayIndexOutOfBoundsException
-
-        ArrayList<Integer> nums = new ArrayList<>();
-        nums.add(1); nums.add(2); nums.add(3); nums.add(4);
-        System.out.println(nums);     // [1, 2, 3, 4]
-    }
-}`,
-    javaOut: "[1, 2, 3, 4]",
-    why: "A Python list is a resizable container. A Java array is a fixed block of memory; the closest equivalent to a list is ArrayList.",
-    fix: "Use ArrayList<T> when the size changes, and plain arrays when it is known up front. Remember ArrayList holds objects, so write Integer, not int, in the angle brackets."
-  },
-
-  //integer overflow
-  {
-    id: "integer-overflow",
-    title: "Integers overflow silently",
-    category: "Numbers",
-    misconception: "Integers can be as large as you need.",
-    python: `big = 2_147_483_647
-print(big + 1)  # 2147483648`,
-    pythonOut: "2147483648",
-    java: `public class Main {
-    public static void main(String[] args) {
-        int big = Integer.MAX_VALUE;   // 2147483647
-        System.out.println(big + 1);   // -2147483648 (wraps around)
-
-        long safe = (long) big + 1;
-        System.out.println(safe);      // 2147483648
-    }
-}`,
-    javaOut: "-2147483648\n2147483648",
-    why: "Python ints grow as needed. Java's int is 32 bits and wraps around with no error when it overflows.",
-    fix: "Use long (64-bit) for larger values, or Math.addExact() to throw an exception on overflow. For arbitrary precision, use BigInteger."
-  }
 ];
 
 
-// ===== RENDERING =====
-// Builds the page from the TRAPS array defined above.
+// ============================================================
+// 2. CONNECT JAVASCRIPT TO THE HTML PAGE
+// ============================================================
+// getElementById() finds an HTML element using its id attribute.
+const lessonList = document.getElementById("lesson-list");
+const navigation = document.getElementById("navigation");
 
-const nav = document.getElementById("nav");         // sidebar container
-const content = document.getElementById("content"); // main area container
 
-// Helper: creates an element in one line
-function el(tag, cls, text) {
-  const e = document.createElement(tag);
-  if (cls) e.className = cls;
-  if (text !== undefined) e.textContent = text;
-  return e;
+// ============================================================
+// 3. PYTHON EXECUTION ENVIRONMENT
+// ============================================================
+// Pyodide runs a Python environment
+// inside the browser using WebAssembly.
+// Once Pyodide loads, JavaScript can ask it to execute Python
+// code without sending that Python code to a separate server.
+let pyodide = null;
+async function initializePython() {
+    try {
+        // Load Pyodide and wait until the Python environment
+        // is ready to execute code.
+        pyodide = await loadPyodide();
+
+        console.log("Python environment is ready!");
+    } catch (error) {
+        // If loading fails, print the error
+        console.error("Failed to initialize Python:", error);
+    }
 }
 
-// Builds one code panel
-function codeBox(lang, label, code, output) {
-  const box = el("div", "code-box " + lang);
-  box.appendChild(el("h3", "", label));
+// Start initializing Python when this script runs.
+initializePython();
 
-  const wrap = el("div", "code-wrap");
-  const pre = el("pre");
-  const c = el("code", "", code);
-  pre.appendChild(c);
-  wrap.appendChild(pre);
 
-  // Copy button
-  const btn = el("button", "copy", "Copy");
-  wrap.appendChild(btn);
-  box.appendChild(wrap);
+// ============================================================
+// 4. CREATE HTML ELEMENTS WITH JAVASCRIPT
+// ============================================================
 
-  const out = el("div", "output");
-  out.appendChild(document.createTextNode("Output: "));
-  // Replace newlines with " | " so multi-line output fits on one line
-  out.appendChild(el("code", "", output.replace(/\n/g, "  |  ")));
-  box.appendChild(out);
+// This helper function creates an HTML element.
+function createElement(tag, text = "") {
+    // Create an element of the requested HTML type.
+    const element = document.createElement(tag);
+    element.textContent = text;
 
-  return box;
+    return element;
 }
 
-// Runs once per trap
-TRAPS.forEach((t, i) => {
+// ============================================================
+// 5. DISPLAY PROGRAM OUTPUT
+// ============================================================
 
-  // Sidebar link that jumps to this trap's card
-  const link = el("a", "", (i + 1) + ". " + t.title);
-  link.href = "#" + t.id;
-  nav.appendChild(link);
+// This function displays a program's output inside an HTML
+// output area.
+function showOutput(element, output) {
 
-  // The trap card. Its id is what the sidebar link jumps to.
-  const s = el("section", "trap");
-  s.id = t.id;
+    element.textContent = output;
+}
 
-  s.appendChild(el("span", "tag", t.category));
-  s.appendChild(el("h2", "", (i + 1) + ". " + t.title));
 
-  const m = el("div", "misconception");
-  m.appendChild(el("strong", "", "Misconception: "));
-  m.appendChild(document.createTextNode(t.misconception));
-  s.appendChild(m);
+// ============================================================
+// 8. BUILD A CODE EDITOR PANEL
+// ============================================================
 
-  const cmp = el("div", "compare");
-  cmp.appendChild(codeBox("py", "Python (python3 main.py)", t.python, t.pythonOut));
-  cmp.appendChild(codeBox("java", "Java (java Main.java)", t.java, t.javaOut));
-  s.appendChild(cmp);
+// This function creates the interactive panel students use
+// to view, edit, copy, reset, and execute example code.
+function createCodePanel(language, initialCode) {
 
-  s.appendChild(el("p", "", "Why it happens: " + t.why));
+    // Create the main container for this code panel.
+    const panel = document.createElement("div");
+    panel.className = "code-panel";
 
-  const fix = el("div", "fix");
-  fix.appendChild(el("strong", "", "Fix: "));
-  fix.appendChild(document.createTextNode(t.fix));
-  s.appendChild(fix);
+    // Create a text area that allows students to edit the code.
+    const editor = document.createElement("textarea");
+    editor.className = "code-editor";
+    editor.value = initialCode;
 
-  content.appendChild(s);
+    // Create the Run button.
+    const runButton = createElement("button", "Run");
+    runButton.className = "run-button";
+
+    // Create the Copy button.
+    const copyButton = createElement("button", "Copy");
+    copyButton.className = "copy-button";
+
+    // Create the Reset button.
+    const resetButton = createElement("button", "Reset");
+    resetButton.className = "reset-button";
+
+    // Create a place to display output or errors.
+    const outputElement = document.createElement("pre");
+    outputElement.className = "code-output";
+    outputElement.textContent = "Run the code to see its output.";
+
+    // --------------------------------------------------------
+    // RUN BUTTON
+    // --------------------------------------------------------
+    runButton.addEventListener("click", () => {
+
+        // Read the code currently in the editor.
+        const source = editor.value;
+
+        // Choose the correct language
+        if (language === "python") {
+            runPython(source, outputElement, runButton);
+        } else if (language === "java") {
+            runJava(source, outputElement, runButton);
+        }
+    });
+
+    // --------------------------------------------------------
+    // COPY BUTTON
+    // --------------------------------------------------------
+    copyButton.addEventListener("click", async () => {
+        try {
+            await navigator.clipboard.writeText(editor.value);
+
+            copyButton.textContent = "Copied!";
+
+            setTimeout(() => {
+                copyButton.textContent = "Copy";
+            }, 1500);
+
+        } catch (error) {
+            showOutput(outputElement, "Unable to copy code: " + error.message);
+        }
+    });
+
+    // --------------------------------------------------------
+    // RESET BUTTON
+    // --------------------------------------------------------
+    // Restore the original example code.
+    resetButton.addEventListener("click", () => {
+        editor.value = initialCode;
+        outputElement.textContent = "Code reset. Run the code to see its output.";
+    });
+
+    // --------------------------------------------------------
+    // KEYBOARD SHORTCUTS
+    // --------------------------------------------------------
+    editor.addEventListener("keydown", (event) => {
+
+        //Tab Shortcut
+        if (event.key === "Tab") {
+            event.preventDefault();
+
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+
+            // Replace the selected text, if any, with four spaces.
+            editor.setRangeText(
+                "    ",
+                start,
+                end,
+                "end"
+            );
+        }
+
+        // Cmd+Enter on Mac or Ctrl+Enter on Windows/Linux
+        // runs the current code without clicking the button.
+        if (
+            event.key === "Enter" &&
+            (event.metaKey || event.ctrlKey)
+        ) {
+            event.preventDefault();
+            runButton.click();
+        }
+    });
+
+    // --------------------------------------------------------
+    // ASSEMBLE THE PANEL
+    // --------------------------------------------------------
+    // Append each element to the panel.
+    panel.appendChild(editor);
+    panel.appendChild(runButton);
+    panel.appendChild(copyButton);
+    panel.appendChild(resetButton);
+    panel.appendChild(outputElement);
+
+    // Return the completed panel so it can be added to a lesson.
+    return panel;
+}
+
+
+// ============================================================
+// 9. RENDER A LESSON CARD
+// ============================================================
+function renderTrap(trap, index) {
+
+    // Create the main lesson card.
+    const card = document.createElement("section");
+    card.className = "lesson-card";
+
+    // Give each card a unique ID.
+    card.id = `lesson-${index}`;
+
+    // Add the lesson title.
+    const title = createElement("h2", trap.title);
+
+    // Add the lesson description.
+    const description = createElement("p", trap.description);
+
+    // Create the Python editor panel
+    const pythonPanel = createCodePanel(
+        "python",
+        trap.pythonCode
+    );
+
+    // Create the Java editor panel
+    const javaPanel = createCodePanel(
+        "java",
+        trap.javaCode
+    );
+
+    // Add all the lesson components to the card.
+    card.appendChild(title);
+    card.appendChild(description);
+    card.appendChild(pythonPanel);
+    card.appendChild(javaPanel);
+
+    // Return the finished card so it can be added to the page.
+    return card;
+}
+
+
+// ============================================================
+// 10. GENERATE THE LESSONS AND NAVIGATION
+// ============================================================
+TRAPS.forEach((trap, index) => {
+
+    // Create a navigation link for this lesson.
+    const navLink = createElement("a", trap.title);
+
+    // Set the link's destination to the matching lesson card.
+    navLink.href = `#lesson-${index}`;
+
+    // Add a class so CSS can style the navigation link.
+    navLink.className = "lesson-nav-link";
+
+    // Add the link to the navigation area.
+    navigation.appendChild(navLink);
+
+    // Build the lesson card.
+    const card = renderTrap(trap, index);
+
+    // Add the card to the lesson list.
+    lessonList.appendChild(card);
 });
 
-// ===== Highlight the current section in the sidebar while scrolling =====
-const links = [...nav.querySelectorAll("a")];
 
-// IntersectionObserver runs our function whenever a watched card enters or leaves the screen
-const io = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((en) => {
-      if (en.isIntersecting) {
-        links.forEach((l) =>
-          l.classList.toggle("active", l.getAttribute("href") === "#" + en.target.id)
-        );
-      }
+// ============================================================
+// 11. HIGHLIGHT THE CURRENT LESSON
+// ============================================================
+
+// IntersectionObserver lets JavaScript detect when an element
+// enters or leaves the visible part of the page.
+const observer = new IntersectionObserver((entries) => {
+
+    // An observer can report multiple elements at once.
+    entries.forEach((entry) => {
+
+        // Only update the navigation when a lesson becomes
+        // visible according to the observer's settings.
+        if (entry.isIntersecting) {
+
+            // Find the navigation link for this lesson.
+            const index = TRAPS.findIndex(
+                (trap, i) => `lesson-${i}` === entry.target.id
+            );
+
+            // Get all navigation links.
+            const navLinks = document.querySelectorAll(
+                ".lesson-nav-link"
+            );
+
+            // Remove the active class from every link.
+            navLinks.forEach((link) => {
+                link.classList.remove("active");
+            });
+
+            // Highlight the link that matches the visible lesson.
+            if (index !== -1 && navLinks[index]) {
+                navLinks[index].classList.add("active");
+            }
+        }
     });
-  },
-  // Only count a card as "visible" when it's near the top of the screen,
-  { rootMargin: "-20% 0px -70% 0px" }
-);
 
-document.querySelectorAll(".trap").forEach((s) => io.observe(s));
+}, {
+    // A lesson is considered for highlighting when it occupies
+    // a meaningful portion of the visible page.
+    threshold: 0.3
+});
+
+
+// Start observing every lesson card.
+document.querySelectorAll(".lesson-card").forEach((card) => {
+    observer.observe(card);
+});
