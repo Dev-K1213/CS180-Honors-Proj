@@ -1,7 +1,5 @@
-// ============================================================
-// 1. LESSON DATA
-// ============================================================
 
+// 1. LESSON DATA
 // Each object in this array represents one Python-to-Java
 // programming concept that students can learn about.
 //
@@ -82,32 +80,39 @@ System.out.println(x + 1);`
 ];
 
 
-// ============================================================
 // 2. CONNECT JAVASCRIPT TO THE HTML PAGE
-// ============================================================
 // getElementById() finds an HTML element using its id attribute.
-const lessonList = document.getElementById("lesson-list");
-const navigation = document.getElementById("navigation");
+const lessonList = document.getElementById("content");
+const navigation = document.getElementById("nav");
 
 
-// ============================================================
+
 // 3. PYTHON EXECUTION ENVIRONMENT
-// ============================================================
 // Pyodide runs a Python environment
 // inside the browser using WebAssembly.
 // Once Pyodide loads, JavaScript can ask it to execute Python
 // code without sending that Python code to a separate server.
 let pyodide = null;
 async function initializePython() {
+    const pythonStatus = document.getElementById("python-status");
+
     try {
-        // Load Pyodide and wait until the Python environment
-        // is ready to execute code.
+        // Load the Python environment.
         pyodide = await loadPyodide();
 
         console.log("Python environment is ready!");
+
+        // Update the status indicator.
+        pythonStatus.textContent = "Python: Ready";
+        pythonStatus.classList.remove("loading");
+        pythonStatus.classList.add("ready");
+
     } catch (error) {
-        // If loading fails, print the error
         console.error("Failed to initialize Python:", error);
+
+        pythonStatus.textContent = "Python: Failed to load";
+        pythonStatus.classList.remove("loading");
+        pythonStatus.classList.add("error");
     }
 }
 
@@ -115,23 +120,18 @@ async function initializePython() {
 initializePython();
 
 
-// ============================================================
-// 4. CREATE HTML ELEMENTS WITH JAVASCRIPT
-// ============================================================
 
+// 4. CREATE HTML ELEMENTS WITH JAVASCRIPT
 // This helper function creates an HTML element.
 function createElement(tag, text = "") {
-    // Create an element of the requested HTML type.
     const element = document.createElement(tag);
     element.textContent = text;
 
     return element;
 }
 
-// ============================================================
-// 5. DISPLAY PROGRAM OUTPUT
-// ============================================================
 
+// 5. DISPLAY PROGRAM OUTPUT
 // This function displays a program's output inside an HTML
 // output area.
 function showOutput(element, output) {
@@ -140,10 +140,8 @@ function showOutput(element, output) {
 }
 
 
-// ============================================================
-// 6. RUN PYTHON CODE
-// ============================================================
 
+// 6. RUN PYTHON CODE
 // This function takes Python code from an editor, executes it
 // through Pyodide, and displays the result.
 async function runPython(source, outputElement, runButton) {
@@ -165,7 +163,7 @@ async function runPython(source, outputElement, runButton) {
     let output = "";
 
     try {
-        // Redirect Python's print() output into our JavaScript
+        // Redirect Python's print() output into JavaScript
         // variable instead of the browser console.
         pyodide.setStdout({
             batched: (text) => {
@@ -197,10 +195,8 @@ async function runPython(source, outputElement, runButton) {
 }
 
 
-// ============================================================
-// 7. RUN JAVA CODE
-// ============================================================
 
+// 7. RUN JAVA CODE
 // Java is not being executed
 // directly inside the browser by this function.
 //
@@ -218,7 +214,7 @@ async function runJava(source, outputElement, runButton) {
     showOutput(outputElement, "Compiling and running Java...");
 
     try {
-        // Send the Java code to Judge0's public demo API.
+        // Send the Java code to Judge0's API.
         const response = await fetch(
             "https://ce.judge0.com/submissions?base64_encoded=false&wait=true",
             {
@@ -273,10 +269,8 @@ async function runJava(source, outputElement, runButton) {
 
 
 
-// ============================================================
-// 8. BUILD A CODE EDITOR PANEL
-// ============================================================
 
+// 8. BUILD A CODE EDITOR PANEL
 // This function creates the interactive panel students use
 // to view, edit, copy, reset, and execute example code.
 function createCodePanel(language, initialCode) {
@@ -307,9 +301,8 @@ function createCodePanel(language, initialCode) {
     outputElement.className = "code-output";
     outputElement.textContent = "Run the code to see its output.";
 
-    // --------------------------------------------------------
+
     // RUN BUTTON
-    // --------------------------------------------------------
     runButton.addEventListener("click", () => {
 
         // Read the code currently in the editor.
@@ -323,9 +316,8 @@ function createCodePanel(language, initialCode) {
         }
     });
 
-    // --------------------------------------------------------
+
     // COPY BUTTON
-    // --------------------------------------------------------
     copyButton.addEventListener("click", async () => {
         try {
             await navigator.clipboard.writeText(editor.value);
@@ -341,18 +333,16 @@ function createCodePanel(language, initialCode) {
         }
     });
 
-    // --------------------------------------------------------
+
     // RESET BUTTON
-    // --------------------------------------------------------
     // Restore the original example code.
     resetButton.addEventListener("click", () => {
         editor.value = initialCode;
         outputElement.textContent = "Code reset. Run the code to see its output.";
     });
 
-    // --------------------------------------------------------
+
     // KEYBOARD SHORTCUTS
-    // --------------------------------------------------------
     editor.addEventListener("keydown", (event) => {
 
         //Tab Shortcut
@@ -371,7 +361,7 @@ function createCodePanel(language, initialCode) {
             );
         }
 
-        // Cmd+Enter on Mac or Ctrl+Enter on Windows/Linux
+        // Cmd+Enter on Mac or Ctrl+Enter on Windows
         // runs the current code without clicking the button.
         if (
             event.key === "Enter" &&
@@ -382,9 +372,8 @@ function createCodePanel(language, initialCode) {
         }
     });
 
-    // --------------------------------------------------------
+
     // ASSEMBLE THE PANEL
-    // --------------------------------------------------------
     // Append each element to the panel.
     panel.appendChild(editor);
     panel.appendChild(runButton);
@@ -397,9 +386,8 @@ function createCodePanel(language, initialCode) {
 }
 
 
-// ============================================================
+
 // 9. RENDER A LESSON CARD
-// ============================================================
 function renderTrap(trap, index) {
 
     // Create the main lesson card.
@@ -438,35 +426,32 @@ function renderTrap(trap, index) {
 }
 
 
-// ============================================================
+
+
 // 10. GENERATE THE LESSONS AND NAVIGATION
-// ============================================================
+
 TRAPS.forEach((trap, index) => {
 
     // Create a navigation link for this lesson.
     const navLink = createElement("a", trap.title);
 
-    // Set the link's destination to the matching lesson card.
+    // Connect the link to its lesson card.
     navLink.href = `#lesson-${index}`;
-
-    // Add a class so CSS can style the navigation link.
     navLink.className = "lesson-nav-link";
 
-    // Add the link to the navigation area.
+    // Add the navigation link to the sidebar.
     navigation.appendChild(navLink);
 
-    // Build the lesson card.
+    // Generate the lesson card.
     const card = renderTrap(trap, index);
 
-    // Add the card to the lesson list.
+    // Add the lesson card to the main content.
     lessonList.appendChild(card);
 });
 
 
-// ============================================================
-// 11. HIGHLIGHT THE CURRENT LESSON
-// ============================================================
 
+// 11. HIGHLIGHT THE CURRENT LESSON
 // IntersectionObserver lets JavaScript detect when an element
 // enters or leaves the visible part of the page.
 const observer = new IntersectionObserver((entries) => {
