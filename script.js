@@ -19,8 +19,12 @@ const TRAPS = [
 x = "hello"
 print(x)`,
 
-        javaCode: `int x = 10;
-System.out.println(x);`
+javaCode: `public class Main {
+    public static void main(String[] args) {
+        int x = 10;
+        System.out.println(x);
+    }
+}`
     },
 
     {
@@ -30,8 +34,12 @@ System.out.println(x);`
         pythonCode: `print(7 / 2)
 print(7 // 2)`,
 
-        javaCode: `System.out.println(7 / 2);
-System.out.println(7.0 / 2);`
+javaCode: `public class Main {
+    public static void main(String[] args) {
+        System.out.println(7 / 2);
+        System.out.println(7.0 / 2);
+    }
+}`
     },
 
     {
@@ -42,10 +50,14 @@ System.out.println(7.0 / 2);`
 b = "hello"
 print(a == b)`,
 
-        javaCode: `String a = "hello";
-String b = "hello";
+javaCode: `public class Main {
+    public static void main(String[] args) {
+        String a = "hello";
+        String b = "hello";
 
-System.out.println(a.equals(b));`
+        System.out.println(a.equals(b));
+    }
+}`
     },
 
     {
@@ -56,15 +68,20 @@ System.out.println(a.equals(b));`
 numbers.append(4)
 print(numbers)`,
 
-        javaCode: `import java.util.ArrayList;
+javaCode: `import java.util.ArrayList;
 
-ArrayList<Integer> numbers = new ArrayList<>();
-numbers.add(1);
-numbers.add(2);
-numbers.add(3);
-numbers.add(4);
+public class Main {
+    public static void main(String[] args) {
+        ArrayList<Integer> numbers = new ArrayList<>();
 
-System.out.println(numbers);`
+        numbers.add(1);
+        numbers.add(2);
+        numbers.add(3);
+        numbers.add(4);
+
+        System.out.println(numbers);
+    }
+}`
     },
 
     {
@@ -74,8 +91,12 @@ System.out.println(numbers);`
         pythonCode: `x = 2147483647
 print(x + 1)`,
 
-        javaCode: `int x = 2147483647;
-System.out.println(x + 1);`
+javaCode: `public class Main {
+    public static void main(String[] args) {
+        int x = 2147483647;
+        System.out.println(x + 1);
+    }
+}`
     }
 ];
 
@@ -428,26 +449,39 @@ function renderTrap(trap, index) {
 
 
 
+
 // 10. GENERATE THE LESSONS AND NAVIGATION
 
-TRAPS.forEach((trap, index) => {
+// Make sure the HTML elements actually exist.
+if (!lessonList || !navigation) {
+    console.error("Could not find #content or #nav in index.html.");
+} else {
 
-    // Create a navigation link for this lesson.
-    const navLink = createElement("a", trap.title);
+    // Remove the original "Loading field guide..." message.
+    lessonList.innerHTML = "";
 
-    // Connect the link to its lesson card.
-    navLink.href = `#lesson-${index}`;
-    navLink.className = "lesson-nav-link";
+    // Clear any existing navigation links.
+    navigation.innerHTML = "";
 
-    // Add the navigation link to the sidebar.
-    navigation.appendChild(navLink);
+    // Generate every lesson from the TRAPS array.
+    TRAPS.forEach((trap, index) => {
 
-    // Generate the lesson card.
-    const card = renderTrap(trap, index);
+        // Create a navigation link.
+        const navLink = createElement("a", trap.title);
+        navLink.href = `#lesson-${index}`;
+        navLink.className = "lesson-nav-link";
 
-    // Add the lesson card to the main content.
-    lessonList.appendChild(card);
-});
+        // Add the link to the sidebar.
+        navigation.appendChild(navLink);
+
+        // Generate the lesson card.
+        const card = renderTrap(trap, index);
+
+        // Add the lesson to the main content.
+        lessonList.appendChild(card);
+    });
+}
+
 
 
 
