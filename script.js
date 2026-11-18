@@ -9,96 +9,379 @@
 // - pythonCode: An example written in Python
 // - javaCode: The equivalent example written in Java
 
+
 const TRAPS = [
-    {
-        title: "Static Typing",
-        description: "Java requires variables to have declared types, while Python is dynamically typed.",
 
+{
+    title: "Primitive Types vs. Objects",
+    description: "Java distinguishes between primitive types and reference types. Python variables reference objects, and even numbers are objects. In Java, int, double, and boolean are primitives, while String and Integer are objects.",
 
-        pythonCode: `x = 10
-x = "hello"
-print(x)`,
+    misconception: "Every Java variable is an object, just like every Python value is an object.",
+    takeaway: "Java distinguishes between primitive types like int and double and reference types like String and Integer. Primitives are not objects.",
 
-javaCode: `public class Main {
+    pythonCode: `x = 10
+y = "hello"
+
+print(type(x))
+print(type(y))
+
+# Everything in Python is an object
+print(isinstance(x, object))`,
+
+    javaCode: `public class Main {
     public static void main(String[] args) {
         int x = 10;
-        System.out.println(x);
+        String y = "hello";
+        Integer z = 10;
+
+        System.out.println(((Object) x).getClass());
+        System.out.println(y.getClass());
+        System.out.println(z.getClass());
     }
 }`
-    },
+},
 
-    {
-        title: "Integer Division",
-        description: "Python and Java handle division differently when both operands are integers.",
+{
+    title: "Pass-by-Value vs. Object References",
+    description: "Python passes object references by assignment. Java always passes arguments by value, including when the value is an object reference. Both languages can mutate an object through a reference, but reassigning a parameter does not replace the caller's variable.",
 
-        pythonCode: `print(7 / 2)
-print(7 // 2)`,
+    misconception: "Passing an object into a Java method allows that method to replace the original variable.",
+    takeaway: "Java always passes arguments by value. For objects, the copied value is a reference, so methods can mutate the referenced object but cannot replace the caller's reference.",
 
-javaCode: `public class Main {
+    pythonCode: `def change(numbers):
+    numbers.append(4)
+    numbers = [100, 200]
+
+values = [1, 2, 3]
+change(values)
+
+print(values)`,
+
+    javaCode: `import java.util.ArrayList;
+
+public class Main {
+    static void change(ArrayList<Integer> numbers) {
+        numbers.add(4);
+        numbers = new ArrayList<>();
+        numbers.add(100);
+    }
+
     public static void main(String[] args) {
-        System.out.println(7 / 2);
-        System.out.println(7.0 / 2);
+        ArrayList<Integer> values = new ArrayList<>();
+        values.add(1);
+        values.add(2);
+        values.add(3);
+
+        change(values);
+        System.out.println(values);
     }
 }`
-    },
+},
 
-    {
-        title: "String Equality",
-        description: "Python compares string contents with ==. In Java, use .equals() to compare string contents.",
+{
+    title: "Mutability and Immutable Objects",
+    description: "Python lists are mutable, while strings are immutable. Java has similar distinctions: ArrayList is mutable, but String is immutable. Reassigning a variable is different from modifying the object it references.",
 
-        pythonCode: `a = "hello"
-b = "hello"
-print(a == b)`,
+    misconception: "Changing a string variable modifies the original string object.",
+    takeaway: "Java Strings are immutable. Operations like concatenation create a new String, while mutable objects like ArrayList can be modified in place.",
 
-javaCode: `public class Main {
-    public static void main(String[] args) {
-        String a = "hello";
-        String b = "hello";
+    pythonCode: `word = "hello"
 
-        System.out.println(a.equals(b));
-    }
-}`
-    },
+# Strings cannot be modified in place
+word = word + " world"
 
-    {
-        title: "Arrays and ArrayLists",
-        description: "Java arrays have a fixed length, while ArrayList allows the collection to grow.",
-
-        pythonCode: `numbers = [1, 2, 3]
+numbers = [1, 2, 3]
 numbers.append(4)
+
+print(word)
 print(numbers)`,
 
-javaCode: `import java.util.ArrayList;
+    javaCode: `import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        ArrayList<Integer> numbers = new ArrayList<>();
+        String word = "hello";
+        word = word + " world";
 
+        ArrayList<Integer> numbers = new ArrayList<>();
         numbers.add(1);
         numbers.add(2);
         numbers.add(3);
         numbers.add(4);
 
+        System.out.println(word);
         System.out.println(numbers);
     }
 }`
-    },
+},
 
-    {
-        title: "Integer Overflow",
-        description: "Java integer types have fixed ranges, so an integer can overflow. Python integers can grow much larger.",
+{
+    title: "Variable Scope and Braces",
+    description: "Python uses indentation to define code blocks, while Java uses curly braces. Java also has block scope: variables declared inside a block cannot be accessed outside it.",
 
-        pythonCode: `x = 2147483647
-print(x + 1)`,
+    misconception: "A variable declared inside an if statement or loop can be accessed anywhere in the method.",
+    takeaway: "Java uses block scope. Variables declared inside a block are only accessible within that block.",
 
-javaCode: `public class Main {
+    pythonCode: `if True:
+    message = "Hello"
+
+print(message)
+
+for i in range(3):
+    number = i
+
+print(number)`,
+
+    javaCode: `public class Main {
     public static void main(String[] args) {
-        int x = 2147483647;
-        System.out.println(x + 1);
+        if (true) {
+            String message = "Hello";
+            System.out.println(message);
+        }
+
+        // This would NOT compile:
+        // System.out.println(message);
     }
 }`
+},
+
+{
+    title: "Default Values and Null",
+    description: "Python variables can be assigned None, but Java distinguishes between null references and primitive values. Java instance fields receive default values, while local variables must be initialized before use.",
+
+    misconception: "Java automatically initializes every variable to null or zero.",
+    takeaway: "Java instance fields receive default values, but local variables must be initialized before they are used. null represents the absence of an object reference.",
+
+    pythonCode: `x = None
+numbers = [None, 10, 20]
+
+print(x)
+print(numbers)`,
+
+    javaCode: `public class Main {
+    int number;
+    String name;
+
+    public static void main(String[] args) {
+        Main example = new Main();
+
+        System.out.println(example.number);
+        System.out.println(example.name);
+
+        // A local variable must be initialized
+        // before it can be used.
+        // int local;
+        // System.out.println(local);
     }
+}`
+},
+
+{
+    title: "Integer vs. Floating-Point Types",
+    description: "Python integers can grow to very large sizes, and Python floats are floating-point numbers. Java requires you to choose numeric types such as int, long, float, or double, each with different ranges and precision.",
+
+    misconception: "Java automatically handles numbers of any size and precision.",
+    takeaway: "Java requires explicit numeric types such as int, long, float, and double. Each has different range and precision limitations.",
+
+    pythonCode: `x = 100000000000000000000000
+y = 5.5
+
+print(x)
+print(type(x))
+print(type(y))`,
+
+    javaCode: `public class Main {
+    public static void main(String[] args) {
+        long x = 1000000000000000000L;
+        double y = 5.5;
+
+        System.out.println(x);
+        System.out.println(((Object) y).getClass());
+
+        // An int cannot hold arbitrarily large numbers.
+    }
+}`
+},
+
+{
+    title: "Method Overloading vs. Dynamic Arguments",
+    description: "Python functions can accept different argument types and use default parameters. Java uses method overloading to define multiple methods with the same name but different parameter lists, and method signatures must be declared.",
+
+    misconception: "A Java method can accept any type of argument just because Python functions can.",
+    takeaway: "Java methods have declared parameter types. Method overloading lets you define multiple methods with the same name but different parameter lists.",
+
+    pythonCode: `def describe(value):
+    print(value)
+
+describe(10)
+describe("hello")
+describe([1, 2, 3])`,
+
+    javaCode: `public class Main {
+    static void describe(int value) {
+        System.out.println(value);
+    }
+
+    static void describe(String value) {
+        System.out.println(value);
+    }
+
+    static void describe(int[] value) {
+        System.out.println(java.util.Arrays.toString(value));
+    }
+
+    public static void main(String[] args) {
+        describe(10);
+        describe("hello");
+        describe(new int[]{1, 2, 3});
+    }
+}`
+},
+
+{
+    title: "Checked vs. Unchecked Exceptions",
+    description: "Both Python and Java use try-catch-style exception handling. However, Java also has checked exceptions, which must be caught or declared with throws at compile time. Python does not enforce this requirement.",
+
+    misconception: "If an exception can happen in Python without being declared, Java methods can also throw any exception without declaring it.",
+    takeaway: "Java checked exceptions must be handled with try-catch or declared using throws. Unchecked exceptions do not have this requirement.",
+
+    pythonCode: `def read_file():
+    file = open("example.txt", "r")
+    print(file.read())
+    file.close()
+
+try:
+    read_file()
+except FileNotFoundError:
+    print("File not found!")`,
+
+    javaCode: `import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class Main {
+    static void readFile() throws FileNotFoundException {
+        File file = new File("example.txt");
+        Scanner scanner = new Scanner(file);
+
+        System.out.println(scanner.nextLine());
+        scanner.close();
+    }
+
+    public static void main(String[] args) {
+        try {
+            readFile();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found!");
+        }
+    }
+}`
+},
+
+{
+    title: "Inheritance and Super",
+    description: "Both languages support inheritance, but Java requires explicit inheritance declarations using extends. Java uses super to access parent-class constructors and methods, while Python uses super() with its own syntax.",
+
+    misconception: "Java inheritance works exactly like Python inheritance, so parent constructors and methods can be accessed without explicitly using super.",
+    takeaway: "Java uses extends to inherit from a class and super() to call a parent constructor. A superclass constructor must be initialized before the subclass constructor finishes.",
+
+    pythonCode: `class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def speak(self):
+        print("Animal sound")
+
+class Dog(Animal):
+    def __init__(self, name):
+        super().__init__(name)
+
+    def speak(self):
+        print(self.name + " says woof!")
+
+dog = Dog("Buddy")
+dog.speak()`,
+
+    javaCode: `class Animal {
+    String name;
+
+    Animal(String name) {
+        this.name = name;
+    }
+
+    void speak() {
+        System.out.println("Animal sound");
+    }
+}
+
+class Dog extends Animal {
+    Dog(String name) {
+        super(name);
+    }
+
+    @Override
+    void speak() {
+        System.out.println(name + " says woof!");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Dog dog = new Dog("Buddy");
+        dog.speak();
+    }
+}`
+},
+
+{
+    title: "Static vs. Instance Members",
+    description: "Python typically uses class attributes and instance attributes, while Java explicitly declares static members that belong to the class rather than individual objects. Instance members belong to each object separately.",
+
+    misconception: "A variable declared inside a Java class is automatically shared by every object created from that class.",
+    takeaway: "Java instance variables belong to individual objects. Static variables belong to the class and are shared across its instances.",
+
+    pythonCode: `class Counter:
+    total = 0
+
+    def __init__(self):
+        self.count = 0
+        Counter.total += 1
+
+a = Counter()
+b = Counter()
+
+a.count += 1
+
+print(a.count)
+print(b.count)
+print(Counter.total)`,
+
+    javaCode: `class Counter {
+    static int total = 0;
+    int count = 0;
+
+    Counter() {
+        total++;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Counter a = new Counter();
+        Counter b = new Counter();
+
+        a.count++;
+
+        System.out.println(a.count);
+        System.out.println(b.count);
+        System.out.println(Counter.total);
+    }
+}`
+}
+
+
 ];
+
 
 
 // 2. CONNECT JAVASCRIPT TO THE HTML PAGE
@@ -121,12 +404,7 @@ async function initializePython() {
         // Load the Python environment.
         pyodide = await loadPyodide();
 
-        console.log("Python environment is ready!");
-
-        // Update the status indicator.
-        pythonStatus.textContent = "Python: Ready";
-        pythonStatus.classList.remove("loading");
-        pythonStatus.classList.add("ready");
+        console.log("Python environment is ready");
 
     } catch (error) {
         console.error("Failed to initialize Python:", error);
@@ -159,6 +437,7 @@ function showOutput(element, output) {
 
     element.textContent = output;
 }
+
 
 
 
@@ -382,8 +661,7 @@ function createCodePanel(language, initialCode) {
             );
         }
 
-        // Cmd+Enter on Mac or Ctrl+Enter on Windows
-        // runs the current code without clicking the button.
+        //Listener
         if (
             event.key === "Enter" &&
             (event.metaKey || event.ctrlKey)
@@ -436,11 +714,23 @@ function renderTrap(trap, index) {
         trap.javaCode
     );
 
+    const misconception = createElement(
+    "p",
+    "Common misconception: " + trap.misconception
+    );
+
+    const takeaway = createElement(
+        "p",
+        "Key takeaway: " + trap.takeaway
+    );
+
     // Add all the lesson components to the card.
-    card.appendChild(title);
-    card.appendChild(description);
-    card.appendChild(pythonPanel);
-    card.appendChild(javaPanel);
+card.appendChild(title);
+card.appendChild(description);
+card.appendChild(misconception);
+card.appendChild(takeaway);
+card.appendChild(pythonPanel);
+card.appendChild(javaPanel);
 
     // Return the finished card so it can be added to the page.
     return card;
