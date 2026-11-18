@@ -3,7 +3,7 @@
 // Each object in this array represents one Python-to-Java
 // programming concept that students can learn about.
 //
-// Each lesson can contain information such as:
+// Each lesson contain information such as:
 // - title: The name of the concept
 // - description: An explanation of the concept
 // - pythonCode: An example written in Python
@@ -398,8 +398,7 @@ const navigation = document.getElementById("nav");
 // code without sending that Python code to a separate server.
 let pyodide = null;
 async function initializePython() {
-    const pythonStatus = document.getElementById("python-status");
-
+    
     try {
         // Load the Python environment.
         pyodide = await loadPyodide();
@@ -408,10 +407,6 @@ async function initializePython() {
 
     } catch (error) {
         console.error("Failed to initialize Python:", error);
-
-        pythonStatus.textContent = "Python: Failed to load";
-        pythonStatus.classList.remove("loading");
-        pythonStatus.classList.add("error");
     }
 }
 
@@ -466,7 +461,9 @@ async function runPython(source, outputElement, runButton) {
         // Redirect Python's print() output into JavaScript
         // variable instead of the browser console.
         pyodide.setStdout({
+            //batched property provides a callback function that Pyodide invokes when output is available.
             batched: (text) => {
+                //append text to output
                 output += text + "\n";
             }
         });
@@ -474,7 +471,7 @@ async function runPython(source, outputElement, runButton) {
         // Execute the student's Python code.
         const result = await pyodide.runPythonAsync(source);
 
-        if (result !== undefined) {
+        if (result != undefined) {
             output += String(result);
         }
 
@@ -499,7 +496,6 @@ async function runPython(source, outputElement, runButton) {
 // 7. RUN JAVA CODE
 // Java is not being executed
 // directly inside the browser by this function.
-//
 // The code is sent to a remote Java execution service
 // using fetch(). The service compiles and runs the Java code
 // and sends the results back.
